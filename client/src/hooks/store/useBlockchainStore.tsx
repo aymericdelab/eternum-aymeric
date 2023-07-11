@@ -61,4 +61,32 @@ const fetchBlockTimestamp = async (): Promise<number | undefined> => {
     }
 };
 
+const fetchBlockTimstampMadara = async (): Promise<number | undefined> => {
+    try {
+      const url = 'http://localhost:9944';
+      const requestData = {
+        id: 1,
+        jsonrpc: '2.0',
+        method: 'starknet_getBlockWithTxHashes',
+        params: ['latest'],
+      };
+  
+      const requestOptions: RequestInit = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+      };
+  
+      const response = await fetch(url, requestOptions);
+      const data = await response.json();
+
+      return data.result.timestamp; // Assuming the result contains the block timestamp
+    } catch (error) {
+      console.error('Error fetching block timestamp:', error);
+      return undefined;
+    }
+};
+
 export default useBlockchainStore;

@@ -8,11 +8,20 @@ echo "Script dir: $script_dir"
 source "$script_dir/../env_variables.sh"
 world="$SOZO_WORLD"
 
-# set config
-source "$script_dir/../set_config.sh"
+madara=false  # Default value
+# Check if --madara option is present
+if [[ " $* " =~ " --madara " ]]; then
+  madara=true
+fi
 
-# mint realms
-source "$script_dir/mint_realms.sh"
+# set config
+if [ "$madara" = true ]; then
+    source "$script_dir/../set_config.sh" --madara
+    source "$script_dir/mint_realms.sh" --madara
+    else
+    source "$script_dir/../set_config.sh"
+    source "$script_dir/mint_realms.sh"
+fi
 
 # mint basic resources (to pay for labor) for first 5 realm entities
 commands=(
@@ -33,10 +42,16 @@ commands=(
     "sozo execute --world $world MintResources --account-address $DOJO_ACCOUNT_ADDRESS --calldata 4,3,1000"
 )
 
+
 for cmd in "${commands[@]}"; do
     echo "Executing command: $cmd"
     output=$(eval "$cmd")
     echo "Output:"
     echo "$output"
     echo "--------------------------------------"
+
+    if [ "$madara" = true ]; then
+        echo "Sleeping for 6 seconds..."
+        sleep 6
+    fi
 done
